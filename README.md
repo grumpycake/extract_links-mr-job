@@ -1,3 +1,16 @@
+# Run youtube subscriber and link extractor
+
+
+### Local
+time python absolutize_path.py < input/test-1.warc | python link_and_youtube_job.py -r local --conf-path mrjob.conf --no-output --output-dir out
+time python absolutize_path.py < input/test-1.warc | python link_and_youtube_job.py --conf-path mrjob.conf --no-output --output-dir out
+
+
+### EMR
+python link_and_youtube_job.py -r emr --pool-emr-job-flows --pool-wait-minutes=1 --conf-path mrjob.conf --no-output --output-dir s3://mmontagna-emr-test-out/small_link_youtube input/small_nov_2015.wat
+
+
+
 ![Common Crawl Logo](http://commoncrawl.org/wp-content/uploads/2012/04/ccLogo.png)
 
 # mrjob starter kit
@@ -61,14 +74,14 @@ Developing and testing your code doesn't actually need a Hadoop installation.
 First, you'll need to get the relevant demo data locally, which can be done by running:
 
     ./get-data.sh
-    
+
 If you're on Windows, you just need to download the files listed and place them in the appropriate folders.
 
 To run the jobs locally, you can simply run:
 
     # we need to turn the relative paths in the input files into absolute paths before passing them to mrjob§
     python absolutize_path.py < input/test-1.warc | python tag_counter.py --conf-path mrjob.conf --no-output --output-dir out
-    
+
     # or 'local' simulates more features of Hadoop such as counters
     python absolutize_path.py < input/test-1.warc | python tag_counter.py -r local --conf-path mrjob.conf --no-output --output-dir out
 
