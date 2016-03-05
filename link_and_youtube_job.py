@@ -127,23 +127,24 @@ class TagCounter(MRJob):
       payload = record.payload.read()
 
       headers, body = payload.split('\r\n\r\n', 1)
-      body = unicode(body.lower().lower(), 'utf-8', errors='replace')
+      body = unicode(body.lower(), 'utf-8', errors='replace')
+      try:
+        if 'Content-Type: text/html' in headers:
+          links = extract_links(body)
+          for link in links:
+            yield {'type' : 'link', 'Link' : link, 'pageURL' : record.url}, 1
 
-      if 'Content-Type: text/html' in headers:
-        links = extract_links(body)
-        for link in links:
-          yield {'type' : 'link', 'Link' : link, 'pageURL' : record.url}, 1
+          if is_youtube_url(record.url) == 'user':
+            user, sub = get_youtube_sub(record.url, 'user', body)
+            if user and sub:
+              yield {'type' : 'youtube_user', 'user' : user, 'subscribers' : sub}, 1
 
-        if is_youtube_url(record.url) == 'user':
-          user, sub = get_youtube_sub(record.url, 'user', body)
-          if user and sub:
-            yield {'type' : 'youtube_user', 'user' : user, 'subscribers' : sub}, 1
-
-        if is_youtube_url(record.url) == 'channel':
-          channel, sub = get_youtube_sub(record.url, 'channel', body)
-          if channel and sub:
-            yield {'type' : 'youtube_channel', 'channel' : channel, 'subscribers' : sub}, 1
-
+          if is_youtube_url(record.url) == 'channel':
+            channel, sub = get_youtube_sub(record.url, 'channel', body)
+            if channel and sub:
+              yield {'type' : 'youtube_channel', 'channel' : channel, 'subscribers' : sub}, 1
+      except:
+        pass
         self.increment_counter('commoncrawl', 'processed_pages', 1)
 
 def get_youtube_sub(url, id_type, body):
