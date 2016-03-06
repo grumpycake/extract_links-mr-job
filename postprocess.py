@@ -28,14 +28,24 @@ for root, dirnames, filenames in os.walk(args.input):
               print e
 
 linksfilename = args.output + '/links_' + str(uuid.uuid4())
+linkListFilename = args.output + '/pageurls_' + str(uuid.uuid4()) . 'csv'
+
 link_output = []
 print "Processing links"
 for link, pageUrls in links.items():
   for pageUrl in pageUrls:
     link_output.append({'Link': link, 'pageUrl': pageUrl})
+
 print "Writing links to ", linksfilename
 with open(linksfilename , 'w') as linkFile:
   json.dump(link_output, linkFile, indent=4, separators=(',', ': '))
+
+with open(linkListFilename , 'w') as f:
+  writer = csv.writer(f, delimiter=",", quotechar='"')
+  for link in link_output:
+    writer.writerow(link['pageUrl'])
+
+#Youtube subscribers
 
 greaterthan50kfilename = args.output + '/youtube_greater_50k_' + str(uuid.uuid4())
 lessthan50kfilename = args.output + '/youtube_less_50k_' + str(uuid.uuid4())
