@@ -28,7 +28,7 @@ for root, dirnames, filenames in os.walk(args.input):
               print e
 
 linksfilename = args.output + '/links_' + str(uuid.uuid4())
-linkListFilename = args.output + '/pageurls_' + str(uuid.uuid4()) . 'csv'
+linkListFilename = args.output + '/pageurls_' + str(uuid.uuid4()) + 'csv'
 
 link_output = []
 print "Processing links"
