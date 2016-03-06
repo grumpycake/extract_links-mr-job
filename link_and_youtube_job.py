@@ -3,7 +3,6 @@ import re, gzip, boto, warc
 import urlnorm, urlparse
 from boto.s3.key import Key
 from gzipstream import GzipStreamFile
-from bs4 import BeautifulSoup
 from collections import Counter
 from mrjob.job import MRJob
 
