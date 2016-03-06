@@ -98,20 +98,23 @@ def is_youtube_url(url):
 class TagCounter(MRJob):
 
   def mapper(self, _, line):
-    f = None
-    if True: #self.options.runner in ['emr', 'hadoop']:
-      conn = boto.connect_s3(anon=True)
-      pds = conn.get_bucket('aws-publicdatasets')
-      k = Key(pds, line)
-      f = warc.WARCFile(fileobj=GzipStreamFile(k))
-    else:
-      print 'Loading local file {}'.format(line)
-      f = warc.WARCFile(fileobj=gzip.open(line))
+    try:
+      f = None
+      if True: #self.options.runner in ['emr', 'hadoop']:
+        conn = boto.connect_s3(anon=True)
+        pds = conn.get_bucket('aws-publicdatasets')
+        k = Key(pds, line)
+        f = warc.WARCFile(fileobj=GzipStreamFile(k))
+      else:
+        print 'Loading local file {}'.format(line)
+        f = warc.WARCFile(fileobj=gzip.open(line))
 
-    for i, record in enumerate(f):
-      for key, value in self.process_record(record):
-        yield key, value
-      self.increment_counter('commoncrawl', 'processed_records', 1)
+      for i, record in enumerate(f):
+        for key, value in self.process_record(record):
+          yield key, value
+        self.increment_counter('commoncrawl', 'processed_records', 1)
+    except Exception as e:
+      print(e)
 
   def combiner(self, key, value):
     yield key, sum(value)
